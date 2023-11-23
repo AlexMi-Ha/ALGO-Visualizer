@@ -4,9 +4,10 @@ async function shuffleArrayAnimated(array, seed) {
         vis.log("Shuffling...")
     }
     var m = array.length, t, i;
+    var rng = new Random(seed);
 
     while (m) {
-        i = Math.floor(crandom(seed) * m--);
+        i = Math.floor(rng.nextSeededRandom() * m--);
         {
             vis.select(i);
             vis.select(m);
@@ -23,13 +24,15 @@ async function shuffleArrayAnimated(array, seed) {
             vis.deselect(m);
             await vis.delay(10);            
         }
-        ++seed
     }
 
     return array;
 }
 
-function crandom(seed) {
-    var x = Math.sin(seed++) * 10000;
-    return x - Math.floor(x);
+function Random(seed = seedElement.value) {
+    this.seed = seed;
+    this.nextSeededRandom = function() {
+        var x = Math.sin(this.seed++) * 10000;
+        return x - Math.floor(x);
+    }
 }

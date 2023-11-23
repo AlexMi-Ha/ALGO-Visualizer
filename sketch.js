@@ -9,7 +9,8 @@ function setup() {
   
   seedElement.value = floor(Math.random() * 1_000_000_000);
 
-  vis = new BarGraphVisualizer(A, new LogContainer());
+  //vis = new BarGraphVisualizer(A, new LogContainer());
+  vis = new GraphVisualizer(new LogContainer());
 }
 
 function draw() {
