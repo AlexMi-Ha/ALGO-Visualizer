@@ -25,7 +25,7 @@ async function bubbleSort(A) {
     n--;
     {
       vis.finished(n);
-      if(!swapped && n-1 > 0) {
+      if(!swapped && n-1 >= 0) {
         await vis.delay();
         await vis.victoryAnimation(n-1, 0);
       }
