@@ -92,6 +92,7 @@ async function heapSort(A) {
     }
     swap(A, 0, i-1);
     {
+      vis.log("Switching first element with last element");
       vis.swap(0,i-1);
       await vis.delay();
       vis.deselect(0);
@@ -100,6 +101,7 @@ async function heapSort(A) {
     }
     A.heapSize -= 1;
     {
+      vis.log("Reducing heap size to " + A.heapSize);
       vis.finished(i-1);
       await vis.delay();
     }
@@ -155,6 +157,11 @@ async function maxHeapify(A, i) {
   if(largest != i) {
     swap(A, i-1, largest-1);
     {
+      if(largest == l) {
+        vis.log("Left child is the largest. Switching with i");
+      }else if(largest == r) {
+        vis.log("Right child is the largest. Switching with i");
+      }
       vis.swap(i-1, largest-1);
       await vis.delay();
       vis.deselect(i-1);
@@ -163,6 +170,7 @@ async function maxHeapify(A, i) {
     }
     await maxHeapify(A, largest);
   }else {
+    vis.log("Root of subtree is already the largest");
     vis.deselect(i-1);
     vis.deselect(largest-1);
     await vis.delay();
