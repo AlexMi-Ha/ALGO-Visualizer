@@ -49,5 +49,5 @@ function LogContainer() {
 
 function shuffleArray() {
   vis.resetAll();
-  shuffleAnimated(A, seedElement.value);
+  shuffleArrayAnimated(A, seedElement.value);
 }

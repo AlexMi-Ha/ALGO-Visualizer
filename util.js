@@ -1,4 +1,4 @@
-async function shuffleAnimated(array, seed) {
+async function shuffleArrayAnimated(array, seed) {
     {
         vis.clearLogs();
         vis.log("Shuffling...")
