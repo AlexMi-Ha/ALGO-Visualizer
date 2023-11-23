@@ -17,7 +17,8 @@ class BinaryTreeNode {
         }
         ellipse(this.x,this.y, widthScaleFactor, heightScaleFactor)
         fill(255);
-        text(value, this.x-3, this.y+3);
+        textAlign(CENTER,CENTER);
+        text(value, this.x, this.y);
     }
 }
 
@@ -151,7 +152,7 @@ class BinaryTreeVisualizer extends Visualizer {
         if(this.displayValueArrayAtBottom) {
             fill(255);
             rect(10, height-40, width-20, 30);
-            const widthPerCell = Math.floor((width-10) / this.nodeValues.length);
+            const widthPerCell = Math.floor((width-20) / this.nodeValues.length);
             fill(0);
             for(let i = 0; i < this.nodeValues.length; ++i) {
                 if(this.selected[i]) {
@@ -164,7 +165,8 @@ class BinaryTreeVisualizer extends Visualizer {
                     rect(10+i*widthPerCell, height-40, widthPerCell, 30);
                     fill(0);
                 }
-                text(this.nodeValues[i], i*widthPerCell + 20, height-20);
+                textAlign(CENTER);
+                text(this.nodeValues[i], 10 + i*widthPerCell + widthPerCell / 2, height-20);
                 line(10 + i*widthPerCell, height-40, 10+i*widthPerCell, height-10);
             }
         }
