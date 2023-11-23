@@ -7,11 +7,13 @@ async function bubbleSort(A) {
       {
         vis.select(i);
         await vis.delay();
+        vis.log(`${A[i-1]} > ${A[i]}?`)
       }
       if(A[i-1] > A[i]) {
         swap(A, i-1, i);
         swapped = true;
         {
+          vis.log(`Swap index ${i-1} and ${i}`);
           vis.swap(i-1, i);
           await vis.delay();
         }

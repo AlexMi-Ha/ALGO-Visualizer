@@ -1,4 +1,8 @@
 async function shuffleAnimated(array, seed) {
+    {
+        vis.clearLogs();
+        vis.log("Shuffling...")
+    }
     var m = array.length, t, i;
 
     while (m) {

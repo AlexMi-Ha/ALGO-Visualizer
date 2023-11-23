@@ -3,7 +3,22 @@
   <head>
     <script src="lib/p5.min.js"></script>
     <meta charset="utf-8" />
+    <style>
+      #log-container {
+        overflow-y: auto;
+        height: 400px;
+        background-color: rgba(0,0,0,.2);
+        width: 100%;
+      }
 
+      .log {
+
+      }
+
+      .log.error {
+        color: red;
+      }
+    </style>
   </head>
   <body>
     <main>
@@ -15,6 +30,10 @@
     <br>
     <label for="shuffle-seed">Seed</label>
     <input id="shuffle-seed">
+
+    <div id="log-container">
+
+    </div>
 
     <script src="visualizer.js"></script>
     <script src="util.js"></script>

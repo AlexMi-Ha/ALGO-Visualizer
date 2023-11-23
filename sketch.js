@@ -9,13 +9,42 @@ function setup() {
   
   seedElement.value = floor(Math.random() * 1_000_000_000);
 
-  vis = new BarGraphVisualizer(A);
+  vis = new BarGraphVisualizer(A, new LogContainer());
 }
 
 function draw() {
   background(220);
   fill(0);
   vis.show();
+}
+
+function LogContainer() {
+  this.logContainer = document.getElementById('log-container');
+
+  this.log = function(text) {
+    let message = document.createElement('p');
+    message.classList.add('log');
+    message.innerText = text;
+    
+    this.logHtmlElement(message);
+  }
+  this.logError = function(text) {
+    let message = document.createElement('p');
+    message.classList.add('log');
+    message.classList.add('error');
+    message.innerText = text;
+    this.logHtmlElement(message);
+    
+  }
+
+  this.clear = function() {
+    this.logContainer.innerHTML = '';
+  }
+
+  this.logHtmlElement = function(ele) {
+    this.logContainer.appendChild(ele);
+    this.logContainer.scrollTop = this.logContainer.scrollHeight;
+  }
 }
 
 function shuffleArray() {
