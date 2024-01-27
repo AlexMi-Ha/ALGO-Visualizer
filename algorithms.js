@@ -1,5 +1,4 @@
 async function bubbleSort() {
-  animating = false;
   let swapped = false;
   let n = vis.length();
   do {
@@ -38,8 +37,13 @@ async function insertionSort() {
       vis.deHighlight(i+1);
       i--;
     }
-    await vis.setValueAt(i + 1,_key);
+    if(i >= 0)
+      vis.highlight(i, "orange");
+    await vis.delay();
+    if(i >= 0)
+      vis.deHighlight(i);
     vis.deHighlight(p);
+    await vis.setValueAt(i + 1,_key);
   }
 }
 

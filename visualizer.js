@@ -40,6 +40,7 @@ class Visualizer {
        container.appendChild(animateButton);
 
        startButton.addEventListener('click', async () => {
+            animating = false;
             this.deHighlightAll();
             stepButton.style.display = 'initial';
             animateButton.style.display = 'initial';
