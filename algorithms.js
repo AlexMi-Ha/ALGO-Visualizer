@@ -1,78 +1,45 @@
-async function bubbleSort(A) {
+async function bubbleSort() {
+  animating = false;
   let swapped = false;
-  let n = A.length;
+  let n = vis.length();
   do {
-    swapped = false;
-    for (let i = 1; i < n; ++i) {
-      {
-        vis.select(i);
-        await vis.delay();
-        vis.log(`${A[i - 1]} > ${A[i]}?`)
-      }
-      if (A[i - 1] > A[i]) {
-        swap(A, i - 1, i);
-        swapped = true;
-        {
-          vis.log(`Swap index ${i - 1} and ${i}`);
-          vis.swap(i - 1, i);
+      swapped = false;
+      for (let i = 1; i < n; ++i) {
+          vis.highlight(i, "red");
+          vis.highlight(i-1, "red");
           await vis.delay();
-        }
+          if (vis.compare(i-1, i) >= 0) {
+              await vis.swap(i - 1, i);
+              swapped = true;
+          }
+          vis.deHighlight(i);
+          vis.deHighlight(i-1);
       }
-      {
-        vis.deselect(i - 1);
-        vis.deselect(i);
-        await vis.delay();
-      }
-    }
-    n--;
-    {
-      vis.finished(n);
-      if (!swapped && n - 1 >= 0) {
-        await vis.delay();
-        await vis.victoryAnimation(n - 1, 0);
-      }
-      await vis.delay();
-    }
+      n--;
+      vis.highlight(n, 'green');
   } while (swapped && n > 0);
+  vis.highlightAll('green');
 }
 
-async function insertionSort(A) {
-  for (let p = 1; p < A.length; ++p) {
-    const _key = A[p];
+async function insertionSort() {
+  const len = vis.length() 
+  for (let p = 1; p < len; ++p) {
+    const _key = vis.getValueAt(p);
+    vis.highlight(p, "red");
+    await vis.delay();
     let i = p - 1;
-    {
-      vis.select(i);
-      vis.markIndex(p);
+
+    while (i >= 0 && vis.getValueAt(i) > _key) {
+      vis.highlight(i+1, "orange");
+      vis.highlight(i, "yellow");
       await vis.delay();
-    }
-    while (i >= 0 && A[i] > _key) {
-      A[i + 1] = A[i];
-      {
-        vis.setValue(i + 1, A[i]);
-        vis.deselect(i);
-        await vis.delay();
-        if (i > 0) {
-          vis.select(i - 1);
-          await vis.delay();
-        }
-      }
+      await vis.copyValueFromTo(i, i+1);
+      vis.deHighlight(i);
+      vis.deHighlight(i+1);
       i--;
     }
-    A[i + 1] = _key
-    {
-      vis.setValue(i + 1, _key);
-      vis.markIndex(i + 1);
-      if (i >= 0) {
-        vis.deselect(i);
-      }
-      await vis.delay();
-
-      vis.unmarkIndexes();
-      await vis.delay();
-    }
-  }
-  {
-    await vis.victoryAnimation(0, A.length - 1);
+    await vis.setValueAt(i + 1,_key);
+    vis.deHighlight(p);
   }
 }
 

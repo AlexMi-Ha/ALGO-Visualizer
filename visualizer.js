@@ -1,32 +1,82 @@
+let stepButton;
+let animateButton;
+let shuffleButton;
+let startButton;
 
-class Visualizer {
-    constructor(logContainer) {
-        if (new.target == Visualizer) {
-            throw new TypeError("Cannot create an instance of an abstract super class");
-        }
-
-        this.logContainer = logContainer
-    }
-
-    show() {
-        throw new Error("show() must be implemented by the sub class");
-    }
-
-    async delay(duration = speedSlider.value) {
-        await sleep(duration);
-    }
-
-    log(text, level = 0) {
-        if (level == 0) {
-            this.logContainer.log(text);
-        } else {
-            this.logContainer.logError(text);
-        }
-    }
-
-    clearLogs() {
-        this.logContainer.clear();
-    }
+function disableAllButtons(val = true) {
+    startButton.disabled = val;
+    shuffleButton.disabled = val;
+    stepButton.disabled = val;
+    animateButton.disabled = val;
 }
 
-const sleep = (delay) => new Promise(resolve => setTimeout(resolve, delay));
+let animating = false; 
+
+
+
+class Visualizer {
+
+    addControls(container) {
+       shuffleButton = document.createElement("button");
+       startButton = document.createElement("button");
+       stepButton = document.createElement("button");
+       animateButton = document.createElement("button");
+
+       shuffleButton.innerText = "Shuffle";
+       startButton.innerText = "Start";
+       stepButton.innerText = "Step";
+       animateButton.innerText = "Animate";
+
+       shuffleButton.id = 'btn-shuffle';
+       startButton.id = 'btn-start';
+       stepButton.id = 'btn-step';
+       animateButton.id = 'btn-animate';
+       stepButton.style.display = 'none';
+       animateButton.style.display = 'none';
+
+       container.appendChild(shuffleButton);
+       container.appendChild(startButton);
+       container.appendChild(stepButton);
+       container.appendChild(animateButton);
+
+       startButton.addEventListener('click', async () => {
+            this.deHighlightAll();
+            stepButton.style.display = 'initial';
+            animateButton.style.display = 'initial';
+            startButton.style.display = 'none';
+        
+            await currentAlgorithm();
+        
+            startButton.style.display = 'initial';
+            stepButton.style.display = 'none';
+            animateButton.style.display = 'none';
+            disableAllButtons(false);
+        });
+        shuffleButton.addEventListener('click', async () => {
+            disableAllButtons();
+            
+            await shuffleArrayAnimated();
+            
+            disableAllButtons(false);
+        });
+    }
+
+    
+    sleep = (delay) => new Promise(resolve => setTimeout(resolve, delay));
+    buttonClick = () => new Promise(resolve => {
+        stepButton.onclick = resolve;
+        animateButton.onclick = () => {
+            animating = true;
+            disableAllButtons();
+            resolve();
+        }     
+    });
+
+    async delay(sleepDuration = 100) {
+        if(animating) {
+            await this.sleep(sleepDuration)
+            return;
+        }
+        await this.buttonClick();
+    }
+}
