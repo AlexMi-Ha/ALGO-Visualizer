@@ -47,103 +47,41 @@ async function insertionSort() {
   }
 }
 
-function swap(A, i, j) {
-  let temp = A[i];
-  A[i] = A[j];
-  A[j] = temp;
+async function heapSort() {
+  console.log("lel", vis.heapSize());
+  await buildMaxHeap();
+  for(let i = vis.heapSize()-1; i >= 1; --i) {
+    console.log("Sorting " + i);
+    await vis.swap(0, i);
+    vis.popHeap();
+    await maxHeapify(0);
+  }
+  console.log("done");
 }
 
-async function heapSort(A) {
-  await buildMaxHeap(A);
-  for(let i = A.length; i >= 2; --i) {
-    {
-      vis.select(0);
-      vis.select(i-1);
-      await vis.delay();
-    }
-    swap(A, 0, i-1);
-    {
-      vis.log("Switching first element with last element");
-      vis.swap(0,i-1);
-      await vis.delay();
-      vis.deselect(0);
-      vis.deselect(i-1);
-      await vis.delay();
-    }
-    A.heapSize -= 1;
-    {
-      vis.log("Reducing heap size to " + A.heapSize);
-      vis.finished(i-1);
-      await vis.delay();
-    }
-    await maxHeapify(A, 1);
-  }
-  {
-    vis.finished(0);
-  }
-}
-
-async function buildMaxHeap(A) {
-  A.heapSize = A.length;
-  {
-    vis.log("Building Max Heap")
-  }
-  for(let i = Math.floor(A.length / 2); i >= 1; --i) {
-    await maxHeapify(A, i);
+async function buildMaxHeap() {
+  for(let i = Math.floor(vis.heapSize() / 2) - 1; i >= 0; --i) {
+    await maxHeapify(i);
   }
 
 }
 
-async function maxHeapify(A, i) {
-  const l = (i << 1);
-  const r = (i << 1) + 1;
+async function maxHeapify(i) {
+  console.log("Called heapify on " + i)
+  const l = vis.leftChild(i);
+  const r = vis.rightChild(i);
   let largest = i;
-  {
-    vis.log("Heapifying index " + i);
-    vis.select(i-1);
-    vis.select(l-1);
-    await vis.delay();
-  }
-  if(l <= A.heapSize && A[l-1] > A[i-1]) {
+
+  console.log("Checking left for bigger: Left:" + i + " Heapsize: " + vis.heapSize())
+  if(l < vis.heapSize() && vis.compare(l, i) > 0) {
     largest = l;
-  }else {
-    vis.deselect(l-1);
   }
-  {
-    await vis.delay();
-    vis.select(r-1);
-    await vis.delay();
-  }
-  if(r <= A.heapSize && A[r-1] > A[largest-1]) {
+  if(r < vis.heapSize() && vis.compare(r, largest) > 0) {
     largest = r;
-    {
-      vis.deselect(l-1);
-    }
-  }else {
-    vis.deselect(r-1);
   }
-  {
-    await vis.delay();
-  }
+  console.log("largest between " + i + " " + l + " " + r + " was " + largest);
   if(largest != i) {
-    swap(A, i-1, largest-1);
-    {
-      if(largest == l) {
-        vis.log("Left child is the largest. Switching with i");
-      }else if(largest == r) {
-        vis.log("Right child is the largest. Switching with i");
-      }
-      vis.swap(i-1, largest-1);
-      await vis.delay();
-      vis.deselect(i-1);
-      vis.deselect(largest-1);
-      await vis.delay();
-    }
-    await maxHeapify(A, largest);
-  }else {
-    vis.log("Root of subtree is already the largest");
-    vis.deselect(i-1);
-    vis.deselect(largest-1);
-    await vis.delay();
+    await vis.swap(i, largest);
+    await maxHeapify(largest);
   }
 }

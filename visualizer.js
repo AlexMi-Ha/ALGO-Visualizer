@@ -12,6 +12,13 @@ function disableAllButtons(val = true) {
 
 let animating = false; 
 
+function getElementOffset(el) {
+    const rect = el.getBoundingClientRect();
+    return {
+      left: rect.left + window.scrollX,
+      top: rect.top + window.scrollY
+    };
+}
 
 
 class Visualizer {
