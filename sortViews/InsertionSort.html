@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertion Sort</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="../lib/util.js"></script>
+    <script src="../lib/visualizer.js"></script>
+    <script src="../lib/visualizers/BarGraphVisualizer.js"></script>
+    <script src="../algorithms.js"></script>
+    <link rel="stylesheet" href="../styles/site.css">
+</head>
+<body>
+    <div id="visualizer-container"></div>
+    
+    <script>
+        const width = 50;
+        const height = 200;
+        const maxVal = 10;
+
+        const vis = new BarGraphVisualizer(document.getElementById('visualizer-container'), [[1,2,3,4,5,6,7,8,9,10]]);
+        const currentAlgorithm = insertionSort;
+
+    </script>
+
+</body>
+</html>

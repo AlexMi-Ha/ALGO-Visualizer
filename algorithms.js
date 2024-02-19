@@ -15,9 +15,9 @@ async function bubbleSort() {
           vis.deHighlight(i-1);
       }
       n--;
-      vis.highlight(n, 'green');
+      vis.highlight(n, 'lightgreen');
   } while (swapped && n > 0);
-  vis.highlightAll('green');
+  vis.highlightAll('lightgreen');
 }
 
 async function insertionSort() {
@@ -45,18 +45,19 @@ async function insertionSort() {
     vis.deHighlight(p);
     await vis.setValueAt(i + 1,_key);
   }
+  vis.highlightAll('lightgreen');
 }
 
 async function heapSort() {
-  console.log("lel", vis.heapSize());
   await buildMaxHeap();
   for(let i = vis.heapSize()-1; i >= 1; --i) {
-    console.log("Sorting " + i);
     await vis.swap(0, i);
+    vis.highlight(vis.heapSize()-1, 'lightgreen');
     vis.popHeap();
     await maxHeapify(0);
   }
-  console.log("done");
+  vis.popHeap();
+  vis.highlightAll('lightgreen', true);
 }
 
 async function buildMaxHeap() {
@@ -67,27 +68,48 @@ async function buildMaxHeap() {
 }
 
 async function maxHeapify(i) {
-  console.log("Called heapify on " + i)
+  vis.highlight(i, 'red');
   const l = vis.leftChild(i);
   const r = vis.rightChild(i);
+  vis.highlight(l, 'cornflowerblue');
+  vis.highlight(r, 'cornflowerblue');
   let largest = i;
-
-  console.log("Checking left for bigger: Left:" + i + " Heapsize: " + vis.heapSize())
+  await vis.delay();
   if(l < vis.heapSize() && vis.compare(l, i) > 0) {
     largest = l;
   }
   if(r < vis.heapSize() && vis.compare(r, largest) > 0) {
     largest = r;
   }
-  console.log("largest between " + i + " " + l + " " + r + " was " + largest);
+  {
+    if(largest === l) {
+      vis.highlight(r, "darkgray");
+      vis.highlight(i, "darkgray");
+    }else if(largest === r) {
+      vis.highlight(l, "darkgray");
+      vis.highlight(i, "darkgray");
+    }else {
+      vis.highlight(l, "darkgray");
+      vis.highlight(r, "darkgray");
+    }
+    vis.highlight(largest, "gold");
+  }
+  await vis.delay();
   if(largest != i) {
+    vis.highlight(largest, "darkgray");
+    vis.highlight(i, "gold");
     await vis.swap(i, largest);
+    vis.deHighlightAll();
     await maxHeapify(largest);
+  }else {
+    vis.deHighlightAll();
   }
 }
 
 async function mergeSort() {
+  vis.showBar(1);
   await _mergeSortWorker(0, vis.length()-1);
+  vis.hideBar(1);
 }
 
 async function _mergeSortWorker(i, j) {
@@ -136,24 +158,25 @@ async function _mergeWorker(p,q,r) {
   await vis.delay();
   for(let merge = 0; merge < mergeArrayIndex; ++merge) {
     await vis.swap(merge, merge+p, 1, 0);
+    if(p == 0 && r >= vis.length() - 1) {
+      vis.highlight(merge+p,"lightgreen", 0);
+    }
   }
 }
 
 async function countingSort() {
-  const input = [];
+  vis.showBar(1);
   for(let i = 0; i < vis.length(0); ++i) {
     const j = vis.getValueAt(i) - 1;
     vis.highlight(i,"red");
-    input[i] = j + 1;
-    await Promise.all([
-      vis.moveFromTo(i,j, 0, 1, 1),
-      vis.setValueAt(j, vis.getValueAt(j, 1)+1, 1),
-    ]);
-    await vis.setValueAt(i, 0, 0, 0, false);
-    vis.resetTransforms(i, 0);
-    vis.deHighlight(i);
+    await vis.delay();
+    vis.highlight(j, 'red', 1);
+    await vis.setValueAt(j, vis.getValueAt(j, 1)+1, 1);
+    vis.deHighlight(j, 1);
+    vis.deHighlight(i,0);
   }
 
+  await vis.delay();
   for(let i = 1; i < vis.length(1); ++i) {
     vis.highlight(i,"darkred",1);
     vis.highlight(i-1,"red",1);
@@ -165,18 +188,23 @@ async function countingSort() {
     vis.deHighlight(i-1,1);
   }
 
+  await vis.delay();
+  vis.showBar(2);
   for(let i = vis.length(0)-1; i >= 0; --i) {
-    const j = input[i] - 1;
+    const j = vis.getValueAt(i,0) - 1;
     const visValue = vis.getValueAt(j,1)- 1;
+    vis.highlight(i,"red",0);
     vis.highlight(j,"red",1);
-    vis.highlight(visValue,"darkred",0);
+    vis.highlight(visValue,"darkred",2);
+    vis.delay();
     await Promise.all([
       vis.setValueAt(j, visValue,1),
-      vis.moveFromTo(visValue,j,0,1,-1),
-      vis.setValueAt(visValue, j + 1, 0)
+      vis.moveFromTo(visValue,j,2,1,-1),
+      vis.setValueAt(visValue, j + 1, 2)
     ]);
-    vis.resetTransforms(visValue,0);
-    vis.deHighlight(visValue,0);
+    vis.resetTransforms(visValue,2);
+    vis.highlight(visValue,'lightgreen',2);
+    vis.deHighlight(i,0);
     vis.deHighlight(j,1);
   }
 
@@ -185,4 +213,6 @@ async function countingSort() {
     cleanup.push(vis.setValueAt(i,0, 1));
   }
   await Promise.all(cleanup);
+  vis.hideBar(0);
+  vis.hideBar(1);
 }
