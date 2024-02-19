@@ -16,75 +16,95 @@ function createListElement(val) {
 
 class BarGraphVisualizer extends Visualizer {
 
-    constructor(container) {
+    constructor(container, array) {
         super();
-        this.graph = $(this.initArray(container));
+        this.graph = new Array(array.length);
+        for(let i = 0; i < array.length; ++i) {
+            const graphContainer = document.createElement('div');
+            graphContainer.classList.add('graphContainer');
+            $(container).append(graphContainer);
+            this.graph[i] = $(this.initArray(graphContainer, array[i]));
+        }
+        super.addControls(container);
     }
 
     // construction
 
-    initArray(container) {
+    initArray(container, array) {
         const graph = document.createElement("ul");
         graph.classList.add('js-bar-graph');
     
         container.appendChild(graph);
     
-        for(let i = 1; i <= maxVal; ++i) {
-            $(graph).append(createListElement(i));
+        for(let i = 0; i < array.length; ++i) {
+            $(graph).append(createListElement(array[i]));
         }
 
-        super.addControls(container);
         return graph;
     }
 
     // element manipulation
 
-    async copyValueFromTo(i, j) {
-        const bars = this.graph.children('.js-bar-cell');
-        const val = this.getValueAt(i);
-        $(bars[i]).addClass('low-opac');
-        await this.setValueAt(j, val);
-        $(bars[i]).removeClass('low-opac');
+    async copyValueFromTo(i, j, indexGraphI = 0, indexGraphJ = 0) {
+        const barsI = this.graph[indexGraphI].children('.js-bar-cell');
+        const val = this.getValueAt(i, indexGraphI);
+        $(barsI[i]).addClass('low-opac');
+        await this.setValueAt(j, val, indexGraphJ);
+        $(barsI[i]).removeClass('low-opac');
     }
 
-    async swap(i,j, duration=1000, animate=true) {
+    async swap(i,j, indexGraphI = 0, indexGraphJ = 0, duration=1000, animate=true) {
         disableAllButtons();
-        const bars = this.graph.children('.js-bar-cell');
         
-        const smaller = Math.min(i,j);
-        const bigger = Math.max(i,j);
-        const distance = (bigger - smaller) * width;
+        const barsI = this.graph[indexGraphI].children('.js-bar-cell');
+        const barsJ = this.graph[indexGraphJ].children('.js-bar-cell');
     
-        const children1 = $(bars[smaller]).children()[0];
-        bars[smaller].replaceChildren($(bars[bigger]).children()[0]);
-        bars[bigger].replaceChildren(children1);
+        const children1 = $(barsI[i]).children()[0];
+        barsI[i].replaceChildren($(barsJ[j]).children()[0]);
+        barsJ[j].replaceChildren(children1);
     
         if(animate) {
-            $(bars[smaller]).css('transform', `translateX(${distance}px)`).addClass('low-opac');
-            $(bars[bigger]).css('transform', `translateX(-${distance}px)`).addClass('low-opac');
-            await $({x:0}).animate({x:1}, {
-                duration: duration,
-                step: function(val) {
-                    const pos = distance - distance * val;
-                    $(bars[smaller]).css('transform', `translateX(${pos}px)`);
-                    $(bars[bigger]).css('transform', `translateX(-${pos}px)`);
-                },
-                done: () =>{
-                    $(bars[smaller]).removeClass('low-opac');
-                    $(bars[bigger]).removeClass('low-opac');
-                }
-            }).promise();
+            await this._swapAnimationBetween(barsI[i], barsJ[j], duration)
         }
         if(!animating) {
             disableAllButtons(false);
         }
     }
 
-    async setValueAt(i, val, duration = 500, animate= true) {
-        disableAllButtons();
-        const bars = this.graph.children('.js-bar-cell');
+    async _swapAnimationBetween(ele1, ele2, duration) {
+        const offset1 = getElementOffset(ele1);
+        const offset2 = getElementOffset(ele2);
 
-        const currentVal = this.getValueAt(i);
+        const x1 = offset2.left - offset1.left;
+        const y1 = offset2.top - offset1.top;
+        const x2 = offset1.left - offset2.left;
+        const y2 = offset1.top - offset2.top;
+
+        $(ele1).css('transform', `translate(${x1}px, ${y1}px)`).addClass('low-opac');
+        $(ele2).css('transform', `translate(${x2}px, ${y2}px)`).addClass('low-opac');
+        await $({x:0}).animate({x:1}, {
+            duration: duration,
+            step: function(val) {
+                const posX1 = x1 - x1*val;
+                const posX2 = x2 - x2*val;
+                const posY1 = y1 - y1 * val
+                const posY2 = y2 - y2 * val;
+
+                $(ele1).css('transform', `translate(${posX1}px, ${posY1}px)`);
+                $(ele2).css('transform', `translate(${posX2}px, ${posY2}px)`);
+            },
+            done: () =>{
+                $(ele1).removeClass('low-opac');
+                $(ele2).removeClass('low-opac');
+            }
+        }).promise();
+    }
+
+    async setValueAt(i, val, indexOfGraph = 0, duration = 500, animate= true) {
+        disableAllButtons();
+        const bars = this.graph[indexOfGraph].children('.js-bar-cell');
+
+        const currentVal = this.getValueAt(i, indexOfGraph);
         bars[i].firstChild.firstChild.innerText = val;
         $(bars[i]).addClass('low-opac');
 
@@ -102,15 +122,13 @@ class BarGraphVisualizer extends Visualizer {
         }
     }
     
-    getValueAt(i) {
-        const bars = this.graph.children('.js-bar-cell');
+    getValueAt(i, indexOfGraph = 0) {
+        const bars = this.graph[indexOfGraph].children('.js-bar-cell');
         return +bars[i].firstChild.firstChild.innerText;
     }
-    compare(i,j) {
-        const bars = this.graph.children('.js-bar-cell');
-    
-        const val1 = this.getValueAt(i);
-        const val2 = this.getValueAt(j);
+    compare(i,j, indexGraphI = 0, indexGraphJ = 0) {  
+        const val1 = this.getValueAt(i, indexGraphI);
+        const val2 = this.getValueAt(j, indexGraphJ);
     
         return val1 - val2;
     }
@@ -118,28 +136,28 @@ class BarGraphVisualizer extends Visualizer {
 
     // Highlighting
 
-    highlight(i, color) {
-        const bars = this.graph.children('.js-bar-cell');
+    highlight(i, color, indexOfGraph = 0) {
+        const bars = this.graph[indexOfGraph].children('.js-bar-cell');
     
         $(bars[i].firstChild).css('background-color', color)
     }
     
-    deHighlight(i) {
-        this.highlight(i, "blue");
+    deHighlight(i, indexOfGraph = 0) {
+        this.highlight(i, "blue", indexOfGraph);
     }
     
-    deHighlightAll() {
-        this.highlightAll("blue");
+    deHighlightAll(indexOfGraph = 0) {
+        this.highlightAll("blue", indexOfGraph);
     }
     
-    highlightAll(color) {
+    highlightAll(color, indexOfGraph = 0) {
         const l = this.length();
         for(let i = 0; i < l; ++i) {
-            this.highlight(i, color);
+            this.highlight(i, color, indexOfGraph);
         }
     }
     
-    length() {
-        return this.graph.children('.js-bar-cell').length;
+    length(indexOfGraph = 0) {
+        return this.graph[indexOfGraph].children('.js-bar-cell').length;
     }
 }

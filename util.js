@@ -1,15 +1,15 @@
 
-async function shuffleArrayAnimated() {
-    vis.deHighlightAll();
-    let m = vis.length();
+async function shuffleArrayAnimated(indexOfGraph = 0) {
+    vis.deHighlightAll(indexOfGraph);
+    let m = vis.length(indexOfGraph);
 
     while (m) {
         const i = Math.floor(Math.random() * m--);
-        vis.highlight(i, "red");
-        vis.highlight(m, "red");
+        vis.highlight(i, "red", indexOfGraph);
+        vis.highlight(m, "red", indexOfGraph);
 
-        await vis.swap(i,m, 100);
-        vis.deHighlight(i);
-        vis.deHighlight(m);
+        await vis.swap(i,m, indexOfGraph, indexOfGraph, 100);
+        vis.deHighlight(i, indexOfGraph);
+        vis.deHighlight(m, indexOfGraph);
     }
 }
