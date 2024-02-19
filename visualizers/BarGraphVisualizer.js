@@ -6,7 +6,7 @@ function createListElement(val) {
     span.style.height = (val / maxVal * height) + "px";
     const textSpan = document.createElement("span");
     textSpan.classList.add('js-bar-text');
-    textSpan.innerText = val;
+    textSpan.innerText = val === 0 ? '' : val;
 
     li.appendChild(span);
     span.appendChild(textSpan);
@@ -71,31 +71,51 @@ class BarGraphVisualizer extends Visualizer {
         }
     }
 
+    async moveFromTo(i,j, indexGraphI = 0, indexGraphJ = 0, direction = 1, duration= 1000, animate = true) {
+        disableAllButtons();
+
+        const barsI = this.graph[indexGraphI].children('.js-bar-cell');
+        const barsJ = this.graph[indexGraphJ].children('.js-bar-cell');
+
+        if(animate) {
+            await this._moveToAnimation(barsI[i], barsJ[j], duration, direction);
+        }
+        if(!animating) {
+            disableAllButtons(false);
+        }
+    }
+
+    resetTransforms(i, indexGraphI = 0) {
+        const barsI = this.graph[indexGraphI].children('.js-bar-cell');
+
+        $(barsI[i]).css('transform', `translate(0px,0px)`);
+    }
+
     async _swapAnimationBetween(ele1, ele2, duration) {
+        await Promise.all([this._moveToAnimation(ele1, ele2, duration, -1),
+        this._moveToAnimation(ele2, ele1, duration, -1)]);
+    }
+
+    async _moveToAnimation(ele1, ele2, duration, direction) {
         const offset1 = getElementOffset(ele1);
         const offset2 = getElementOffset(ele2);
 
-        const x1 = offset2.left - offset1.left;
-        const y1 = offset2.top - offset1.top;
-        const x2 = offset1.left - offset2.left;
-        const y2 = offset1.top - offset2.top;
-
-        $(ele1).css('transform', `translate(${x1}px, ${y1}px)`).addClass('low-opac');
-        $(ele2).css('transform', `translate(${x2}px, ${y2}px)`).addClass('low-opac');
+        const xMax = offset2.left - offset1.left;
+        const yMax = offset2.top - offset1.top;
+        if(direction === -1) {
+            $(ele1).css('transform', `translate(${xMax}px, ${yMax}px)`);
+        }
+        $(ele1).addClass('low-opac');
         await $({x:0}).animate({x:1}, {
             duration: duration,
             step: function(val) {
-                const posX1 = x1 - x1*val;
-                const posX2 = x2 - x2*val;
-                const posY1 = y1 - y1 * val
-                const posY2 = y2 - y2 * val;
+                const posX1 = direction === -1 ? xMax - xMax*val : xMax*val;
+                const posY1 = direction === -1 ? yMax - yMax * val : yMax*val;
 
                 $(ele1).css('transform', `translate(${posX1}px, ${posY1}px)`);
-                $(ele2).css('transform', `translate(${posX2}px, ${posY2}px)`);
             },
             done: () =>{
                 $(ele1).removeClass('low-opac');
-                $(ele2).removeClass('low-opac');
             }
         }).promise();
     }
@@ -105,7 +125,7 @@ class BarGraphVisualizer extends Visualizer {
         const bars = this.graph[indexOfGraph].children('.js-bar-cell');
 
         const currentVal = this.getValueAt(i, indexOfGraph);
-        bars[i].firstChild.firstChild.innerText = val;
+        bars[i].firstChild.firstChild.innerText = val === 0 ? '' : val;
         $(bars[i]).addClass('low-opac');
 
         if(!animate) {

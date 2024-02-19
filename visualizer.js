@@ -24,6 +24,10 @@ function getElementOffset(el) {
 class Visualizer {
 
     addControls(container) {
+        const controlContainer = document.createElement('div');
+        controlContainer.classList.add('control-container');
+        container.appendChild(controlContainer);
+
        shuffleButton = document.createElement("button");
        startButton = document.createElement("button");
        stepButton = document.createElement("button");
@@ -41,10 +45,10 @@ class Visualizer {
        stepButton.style.display = 'none';
        animateButton.style.display = 'none';
 
-       container.appendChild(shuffleButton);
-       container.appendChild(startButton);
-       container.appendChild(stepButton);
-       container.appendChild(animateButton);
+       controlContainer.appendChild(shuffleButton);
+       controlContainer.appendChild(startButton);
+       controlContainer.appendChild(stepButton);
+       controlContainer.appendChild(animateButton);
 
        startButton.addEventListener('click', async () => {
             animating = false;
