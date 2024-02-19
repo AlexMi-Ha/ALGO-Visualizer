@@ -1,178 +1,218 @@
-async function bubbleSort(A) {
+async function bubbleSort() {
   let swapped = false;
-  let n = A.length;
+  let n = vis.length();
   do {
-    swapped = false;
-    for (let i = 1; i < n; ++i) {
-      {
-        vis.select(i);
-        await vis.delay();
-        vis.log(`${A[i - 1]} > ${A[i]}?`)
-      }
-      if (A[i - 1] > A[i]) {
-        swap(A, i - 1, i);
-        swapped = true;
-        {
-          vis.log(`Swap index ${i - 1} and ${i}`);
-          vis.swap(i - 1, i);
+      swapped = false;
+      for (let i = 1; i < n; ++i) {
+          vis.highlight(i, "red");
+          vis.highlight(i-1, "red");
           await vis.delay();
-        }
+          if (vis.compare(i-1, i) >= 0) {
+              await vis.swap(i - 1, i);
+              swapped = true;
+          }
+          vis.deHighlight(i);
+          vis.deHighlight(i-1);
       }
-      {
-        vis.deselect(i - 1);
-        vis.deselect(i);
-        await vis.delay();
-      }
-    }
-    n--;
-    {
-      vis.finished(n);
-      if (!swapped && n - 1 >= 0) {
-        await vis.delay();
-        await vis.victoryAnimation(n - 1, 0);
-      }
-      await vis.delay();
-    }
+      n--;
+      vis.highlight(n, 'lightgreen');
   } while (swapped && n > 0);
+  vis.highlightAll('lightgreen');
 }
 
-async function insertionSort(A) {
-  for (let p = 1; p < A.length; ++p) {
-    const _key = A[p];
+async function insertionSort() {
+  const len = vis.length() 
+  for (let p = 1; p < len; ++p) {
+    const _key = vis.getValueAt(p);
+    vis.highlight(p, "red");
+    await vis.delay();
     let i = p - 1;
-    {
-      vis.select(i);
-      vis.markIndex(p);
+
+    while (i >= 0 && vis.getValueAt(i) > _key) {
+      vis.highlight(i+1, "orange");
+      vis.highlight(i, "yellow");
       await vis.delay();
-    }
-    while (i >= 0 && A[i] > _key) {
-      A[i + 1] = A[i];
-      {
-        vis.setValue(i + 1, A[i]);
-        vis.deselect(i);
-        await vis.delay();
-        if (i > 0) {
-          vis.select(i - 1);
-          await vis.delay();
-        }
-      }
+      await vis.copyValueFromTo(i, i+1);
+      vis.deHighlight(i);
+      vis.deHighlight(i+1);
       i--;
     }
-    A[i + 1] = _key
-    {
-      vis.setValue(i + 1, _key);
-      vis.markIndex(i + 1);
-      if (i >= 0) {
-        vis.deselect(i);
-      }
-      await vis.delay();
-
-      vis.unmarkIndexes();
-      await vis.delay();
-    }
+    if(i >= 0)
+      vis.highlight(i, "orange");
+    await vis.delay();
+    if(i >= 0)
+      vis.deHighlight(i);
+    vis.deHighlight(p);
+    await vis.setValueAt(i + 1,_key);
   }
-  {
-    await vis.victoryAnimation(0, A.length - 1);
-  }
+  vis.highlightAll('lightgreen');
 }
 
-function swap(A, i, j) {
-  let temp = A[i];
-  A[i] = A[j];
-  A[j] = temp;
+async function heapSort() {
+  await buildMaxHeap();
+  for(let i = vis.heapSize()-1; i >= 1; --i) {
+    await vis.swap(0, i);
+    vis.highlight(vis.heapSize()-1, 'lightgreen');
+    vis.popHeap();
+    await maxHeapify(0);
+  }
+  vis.popHeap();
+  vis.highlightAll('lightgreen', true);
 }
 
-async function heapSort(A) {
-  await buildMaxHeap(A);
-  for(let i = A.length; i >= 2; --i) {
-    {
-      vis.select(0);
-      vis.select(i-1);
-      await vis.delay();
-    }
-    swap(A, 0, i-1);
-    {
-      vis.log("Switching first element with last element");
-      vis.swap(0,i-1);
-      await vis.delay();
-      vis.deselect(0);
-      vis.deselect(i-1);
-      await vis.delay();
-    }
-    A.heapSize -= 1;
-    {
-      vis.log("Reducing heap size to " + A.heapSize);
-      vis.finished(i-1);
-      await vis.delay();
-    }
-    await maxHeapify(A, 1);
-  }
-  {
-    vis.finished(0);
-  }
-}
-
-async function buildMaxHeap(A) {
-  A.heapSize = A.length;
-  {
-    vis.log("Building Max Heap")
-  }
-  for(let i = Math.floor(A.length / 2); i >= 1; --i) {
-    await maxHeapify(A, i);
+async function buildMaxHeap() {
+  for(let i = Math.floor(vis.heapSize() / 2) - 1; i >= 0; --i) {
+    await maxHeapify(i);
   }
 
 }
 
-async function maxHeapify(A, i) {
-  const l = (i << 1);
-  const r = (i << 1) + 1;
+async function maxHeapify(i) {
+  vis.highlight(i, 'red');
+  const l = vis.leftChild(i);
+  const r = vis.rightChild(i);
+  vis.highlight(l, 'cornflowerblue');
+  vis.highlight(r, 'cornflowerblue');
   let largest = i;
-  {
-    vis.log("Heapifying index " + i);
-    vis.select(i-1);
-    vis.select(l-1);
-    await vis.delay();
-  }
-  if(l <= A.heapSize && A[l-1] > A[i-1]) {
+  await vis.delay();
+  if(l < vis.heapSize() && vis.compare(l, i) > 0) {
     largest = l;
-  }else {
-    vis.deselect(l-1);
   }
-  {
-    await vis.delay();
-    vis.select(r-1);
-    await vis.delay();
-  }
-  if(r <= A.heapSize && A[r-1] > A[largest-1]) {
+  if(r < vis.heapSize() && vis.compare(r, largest) > 0) {
     largest = r;
-    {
-      vis.deselect(l-1);
-    }
-  }else {
-    vis.deselect(r-1);
   }
   {
-    await vis.delay();
-  }
-  if(largest != i) {
-    swap(A, i-1, largest-1);
-    {
-      if(largest == l) {
-        vis.log("Left child is the largest. Switching with i");
-      }else if(largest == r) {
-        vis.log("Right child is the largest. Switching with i");
-      }
-      vis.swap(i-1, largest-1);
-      await vis.delay();
-      vis.deselect(i-1);
-      vis.deselect(largest-1);
-      await vis.delay();
+    if(largest === l) {
+      vis.highlight(r, "darkgray");
+      vis.highlight(i, "darkgray");
+    }else if(largest === r) {
+      vis.highlight(l, "darkgray");
+      vis.highlight(i, "darkgray");
+    }else {
+      vis.highlight(l, "darkgray");
+      vis.highlight(r, "darkgray");
     }
-    await maxHeapify(A, largest);
-  }else {
-    vis.log("Root of subtree is already the largest");
-    vis.deselect(i-1);
-    vis.deselect(largest-1);
-    await vis.delay();
+    vis.highlight(largest, "gold");
   }
+  await vis.delay();
+  if(largest != i) {
+    vis.highlight(largest, "darkgray");
+    vis.highlight(i, "gold");
+    await vis.swap(i, largest);
+    vis.deHighlightAll();
+    await maxHeapify(largest);
+  }else {
+    vis.deHighlightAll();
+  }
+}
+
+async function mergeSort() {
+  vis.showBar(1);
+  await _mergeSortWorker(0, vis.length()-1);
+  vis.hideBar(1);
+}
+
+async function _mergeSortWorker(i, j) {
+  if(i >= j) {
+    return;
+  }
+  const mid = Math.floor((i+j)/2);
+  await _mergeSortWorker(i, mid);
+  await _mergeSortWorker(mid + 1, j);
+
+  await _mergeWorker(i,mid,j);
+}
+
+async function _mergeWorker(p,q,r) {
+  for(let i = p; i <= q; ++i) {
+    vis.highlight(i, "cadetblue")
+  } 
+  for(let i = q+1; i <= r; ++i) {
+    vis.highlight(i, "cornflowerblue")
+  } 
+  
+  i = p
+  j = q + 1
+  vis.highlight(i, "red");
+  vis.highlight(j, "red");
+  await vis.delay();
+
+  mergeArrayIndex = 0;
+  while(i <= q || j <= r) {
+    await vis.delay();
+    if ((i > q ? Math.min() : vis.getValueAt(i)) <= (j > r ? Math.min() : vis.getValueAt(j))) {
+      vis.deHighlight(i);
+      await vis.swap(i, mergeArrayIndex, 0, 1);
+      ++i;
+      if(i < vis.length() && i <= q)
+        vis.highlight(i, "red");
+    }else {
+      vis.deHighlight(j);
+      await vis.swap(j, mergeArrayIndex, 0, 1);
+      ++j;
+      if(j < vis.length() && j <= r)
+        vis.highlight(j, "red");
+    }
+    ++mergeArrayIndex;
+  }
+  await vis.delay();
+  for(let merge = 0; merge < mergeArrayIndex; ++merge) {
+    await vis.swap(merge, merge+p, 1, 0);
+    if(p == 0 && r >= vis.length() - 1) {
+      vis.highlight(merge+p,"lightgreen", 0);
+    }
+  }
+}
+
+async function countingSort() {
+  vis.showBar(1);
+  for(let i = 0; i < vis.length(0); ++i) {
+    const j = vis.getValueAt(i) - 1;
+    vis.highlight(i,"red");
+    await vis.delay();
+    vis.highlight(j, 'red', 1);
+    await vis.setValueAt(j, vis.getValueAt(j, 1)+1, 1);
+    vis.deHighlight(j, 1);
+    vis.deHighlight(i,0);
+  }
+
+  await vis.delay();
+  for(let i = 1; i < vis.length(1); ++i) {
+    vis.highlight(i,"darkred",1);
+    vis.highlight(i-1,"red",1);
+    const thisValue = vis.getValueAt(i, 1);
+    const beforeValue = vis.getValueAt(i-1, 1);
+
+    await vis.setValueAt(i,thisValue + beforeValue, 1);
+    vis.deHighlight(i,1);
+    vis.deHighlight(i-1,1);
+  }
+
+  await vis.delay();
+  vis.showBar(2);
+  for(let i = vis.length(0)-1; i >= 0; --i) {
+    const j = vis.getValueAt(i,0) - 1;
+    const visValue = vis.getValueAt(j,1)- 1;
+    vis.highlight(i,"red",0);
+    vis.highlight(j,"red",1);
+    vis.highlight(visValue,"darkred",2);
+    vis.delay();
+    await Promise.all([
+      vis.setValueAt(j, visValue,1),
+      vis.moveFromTo(visValue,j,2,1,-1),
+      vis.setValueAt(visValue, j + 1, 2)
+    ]);
+    vis.resetTransforms(visValue,2);
+    vis.highlight(visValue,'lightgreen',2);
+    vis.deHighlight(i,0);
+    vis.deHighlight(j,1);
+  }
+
+  const cleanup = [];
+  for(let i = 0;  i < vis.length(1); ++i) {
+    cleanup.push(vis.setValueAt(i,0, 1));
+  }
+  await Promise.all(cleanup);
+  vis.hideBar(0);
+  vis.hideBar(1);
 }

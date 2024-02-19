@@ -1,46 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script src="lib/p5.min.js"></script>
-    <meta charset="utf-8" />
-    <style>
-      #log-container {
-        overflow-y: auto;
-        height: 400px;
-        background-color: rgba(0,0,0,.2);
-        width: 100%;
-      }
-
-      .log {
-
-      }
-
-      .log.error {
-        color: red;
-      }
-      </style>
-      <script src="util.js"></script>
-      <script src="visualizer.js"></script>
-      <script src="algorithms.js"></script>
-  </head>
-  <body>
-    <main>
-    </main>
-    <input type="range" min=5 max=1000 style="direction:rtl;" id="speed-slider"/>
-    <button onclick="shuffleArray()">Shuffle</button>
-    <button onclick="bubbleSort(A)">Bubble Sort</button>
-    <button onclick="insertionSort(A)">Insertion Sort</button>
-    <br>
-    <label for="shuffle-seed">Seed</label>
-    <input id="shuffle-seed">
-
-    <div id="log-container">
-
-    </div>
-
-    <script src="sketch.js"></script>
-    <script src="visualizers/BarGraphVisualizer.js"></script>
-    <script src="visualizers/GraphVisualizer.js"></script>
-    <script src="visualizers/BinaryTreeVisualizer.js"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algo Visualizer</title>
+</head>
+<body>
+    <h1>Bar Chart Algorithms</h1>
+    <ul>
+        <li><a href="sortViews/BubbleSort.html">Bubble Sort</a></li>
+        <li><a href="sortViews/InsertionSort.html">Insertion Sort</a></li>
+    </ul>
+    <h1>N-Bar Chart Algorithms</h1>
+    <ul>
+        <li><a href="sortViews/MergeSort.html">Merge Sort</a></li>
+        <li><a href="sortViews/CountingSort.html">Counting Sort</a></li>
+    </ul>
+    <h1>Heap Graph Algorithms</h1>
+    <ul>
+        <li><a href="sortViews/HeapSort.html">Heap Sort</a></li>
+    </ul>
+</body>
 </html>

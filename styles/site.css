@@ -1,0 +1,158 @@
+#visualizer-container {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 2em;
+}
+
+.js-bar-graph {
+    display: initial;
+}
+
+.js-bar-cell {
+    float:left;
+    list-style: none;
+    position: relative;
+    height: 200px;
+    width: 50px;
+}
+
+.js-bar-cell > .js-bar {
+    display:block;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    background-color: blue;
+    color:white;
+    vertical-align: baseline;
+}
+
+.js-bar-text {
+    color:black;
+    position: absolute;
+    bottom: -22px;
+}
+
+.js-bar-cell.animating {
+    transition: transform 5s ease-in-out;
+}
+
+.low-opac {
+    opacity: .4;
+}
+
+
+.tree {
+    min-width: 600px;
+    margin: auto;
+    position: relative;
+    display: flex;
+}
+
+.tree ul {
+    margin: auto;
+    padding: 20px 5px 5px 0px;
+    position: relative;
+}
+
+.tree li {
+    float: left;
+    text-align: center;
+    list-style-type: none;
+    position: relative;
+    padding: 20px 5px 5px 0px;
+}
+
+.tree li::before,
+.tree li::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 50%;
+    border-top: 3px solid gray;
+    width: 50%;
+    height: 20px;
+}
+
+.tree li::after {
+    right: auto;
+    left: 50%;
+    border-left: 3px solid gray;
+}
+
+.tree li:only-child::after,
+.tree li:only-child::before {
+    display: none;
+}
+
+.tree li:only-child {
+    padding-top: 0;
+}
+
+.tree li:first-child::before,
+.tree li:last-child::after {
+    border: 0 none;
+}
+
+.tree li:last-child::before {
+    border-right: 3px solid gray;
+    border-radius: 0 5px 0 0;
+    -webkit-border-radius: 0 5px 0 0;
+    -moz-border-radius: 0 5px 0 0;
+}
+
+.tree li:first-child::after {
+    border-radius: 5px 0 0 0;
+    -webkit-border-radius: 5px 0 0 0;
+    -moz-border-radius: 5px 0 0 0;
+}
+
+.tree ul ul::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    border-left: 3px solid gray;
+    width: 0;
+    height: 20px;
+}
+
+.tree li .circle:hover {
+    background: lightgray;
+    color: #000;
+    border: 5px solid black;
+}
+
+.low-opac {
+    opacity: .4;
+}
+
+.solidCircle {
+    display: inline-block;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    padding: 2px;
+    background: #fff;
+    border: 3px solid gray;
+    color: #000;
+    text-align: center;
+    font: 14px Arial, sans-serif;
+    line-height: 50px;
+}
+
+.arr-vis span {
+    display: block;
+    float: left;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    border: 3px solid gray;
+    border-right: 0 none;
+}
+
+.arr-vis span:last-child {
+    border-right: 3px solid gray;
+}
