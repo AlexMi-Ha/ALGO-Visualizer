@@ -216,3 +216,48 @@ async function countingSort() {
   vis.hideBar(0);
   vis.hideBar(1);
 }
+
+
+async function radixSort() {
+  for(let i = vis.rowLength(0) - 1 ; i >= 0 ; --i) {
+    vis.highlightColumn(i, 'gold');
+    await radix_countingSort(i);
+    vis.deHighlightAll(0);
+  }  
+  vis.highlightAll('lightgreen');
+}
+
+async function radix_countingSort(column) {
+  const counts = new Array(10).fill(0);
+  for(let i = 0; i < vis.columnLength(column); ++i) {
+    vis.highlightRow(i, 'lightgray');
+    vis.highlightCell(i, column, 'lightsteelblue')
+    const j = vis.readCell(i, column);
+    counts[j] += + 1;
+    await vis.delay();
+    vis.deHighlightRow(i);
+    vis.highlightCell(i, column, 'gold')
+  }
+  
+  for(let i = 1; i < 10; ++i) {
+    counts[i] += counts[i-1];
+  }
+  
+  let output = new Array(vis.columnLength(column)).fill(0);
+  for(let i = vis.columnLength(column) - 1; i >= 0; --i) {
+    const j = vis.readCell(i, column);
+    counts[j] -= 1;
+    const countVal = counts[j];
+    output[countVal] = vis.readRow(i);    
+  }
+  // visualize result
+  await vis.delay();
+  for(let i = 0; i < vis.columnLength(column); ++i) {
+    vis.highlightRow(i, 'lightSalmon');
+    vis.highlightCell(i, column, 'red')
+    vis.writeRow(i, output[i]);
+    await vis.delay();
+    vis.deHighlightRow(i);
+    vis.highlightCell(i, column, 'gold')
+  }
+}
