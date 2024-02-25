@@ -153,7 +153,7 @@
     --border-hide-style: dotted;
 }
 
-.arr-vis span:not(:first-child) {
+.arr-vis span.dotted-internal-borders:not(:first-child) {
     border-left-style: var(--border-hide-style);
 }
 
