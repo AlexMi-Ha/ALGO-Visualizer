@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 #visualizer-container {
     display:flex;
     flex-direction: column;
@@ -26,7 +30,8 @@
 }
 
 .js-bar-cell > .js-bar, .js-bar-cell-index > .js-index {
-    display:block;
+    display:flex;
+    justify-content: center;
     text-align: center;
     position: absolute;
     width: 100%;
@@ -151,12 +156,15 @@
     color: #000;
     text-align: center;
     font: 14px Arial, sans-serif;
-    line-height: 50px;
+    line-height: 40px;
 }
 
 .arr-vis {
-    height: 56px;
-    margin-bottom: 2em;
+    height: 50px;
+}
+
+.arr-vis + .control-container {
+    margin-top: 1em;
 }
 
 .arr-vis .arr-cell {
@@ -164,7 +172,7 @@
     float: left;
     width: 50px;
     height: 50px;
-    line-height: 50px;
+    line-height: 40px;
     text-align: center;
     border: 3px solid gray;
     border-right: 0 none;
@@ -184,7 +192,7 @@
     float: left;
     width: 50px;
     height: 50px;
-    line-height: 50px;
+    line-height: 40px;
     margin-left: 3px;
     text-align: center;
     opacity: .5;
@@ -218,3 +226,16 @@
 .log-text {
     margin: 0;
 }
+
+.visual-dropdown {
+    margin-bottom: 1em;
+}
+
+#speed-slider-label {
+    display: block;
+    user-select: none;
+  } 
+  
+  #speed-slider {
+    display: block;
+  }
