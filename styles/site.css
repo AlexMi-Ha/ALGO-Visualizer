@@ -154,8 +154,14 @@
     line-height: 50px;
 }
 
-.arr-vis span {
-    display: inline-block;
+.arr-vis {
+    height: 56px;
+    margin-bottom: 2em;
+}
+
+.arr-vis .arr-cell {
+    display: block;
+    float: left;
     width: 50px;
     height: 50px;
     line-height: 50px;
@@ -165,12 +171,27 @@
     --border-hide-style: dotted;
 }
 
-.arr-vis span.dotted-internal-borders:not(:first-child) {
-    border-left-style: var(--border-hide-style);
+.arr-cell.last {
+    border-right: 3px solid gray;
 }
 
-.arr-vis span:last-child {
-    border-right: 3px solid gray;
+.arr-vis .arr-cell + .arr-index {
+    clear: left;
+}
+
+.arr-vis .arr-index {
+    display: block;
+    float: left;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    margin-left: 3px;
+    text-align: center;
+    opacity: .5;
+}
+
+.arr-vis span.dotted-internal-borders:not(:first-child) {
+    border-left-style: var(--border-hide-style);
 }
 
 #log-container {
