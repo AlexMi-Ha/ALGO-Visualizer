@@ -160,3 +160,28 @@
 .arr-vis span:last-child {
     border-right: 3px solid gray;
 }
+
+#log-container {
+    border: 1px solid gray;
+    display: none;
+    grid-template-columns: 3em 1fr;
+    align-items: center;
+    align-content: center;
+    max-width: 500px;
+    padding: 1em;
+}
+
+.info-container {
+    display: grid;
+    background-color: blue;
+    color: white;
+    border-radius: 500000px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    width: 2em;
+    height: 2em;
+    place-content: center;
+}
+
+.log-text {
+    margin: 0;
+}
