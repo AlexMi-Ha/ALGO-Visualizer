@@ -343,3 +343,68 @@ async function radix_countingSort(column) {
     vis.highlightCell(i, column, 'gold')
   }
 }
+
+
+async function quickSort() {
+  await _quickSortWorker(0, vis.length()-1);
+
+  vis.highlightAll('lightgreen');
+  vis.log('Finished sorting!');
+}
+
+async function _quickSortWorker(start, end) {
+  if(start >= end) {
+    return;
+  }
+  for(let i = start; i <= end; ++i) {
+    vis.highlight(i, 'cadetblue')
+  }
+  const q = await _partitionWorker(start, end)
+  vis.deHighlightAll();
+  await _quickSortWorker(start, q-1);
+  await _quickSortWorker(q+1, end);
+}
+
+async function _partitionWorker(start, end) {
+  const x = vis.getValueAt(end);
+  vis.highlight(end, 'red');
+  vis.log(`Partitioning from index ${start} to ${end} with pivot value ${x}!`);
+  await vis.delay();
+  let i = start - 1;
+  if(i >= 0)
+    vis.highlight(i, 'orange');
+  for(let j = start; j < end; ++j) {
+    vis.log(`Comparing index ${j} with the pivot...`)
+    vis.highlight(j, 'orange');
+    await vis.delay();
+    if(vis.getValueAt(j) <= x) {
+
+      vis.log(`Index ${j} was smaller than the pivot! Moving it to the 'less than' pile...`)
+      
+      if(i >= 0)
+        vis.highlight(i, 'cadetblue');
+      ++i;
+      vis.highlight(i, 'cornflowerblue');
+      vis.highlight(j, 'orange'); 
+      if(i !== j) {
+        await vis.swap(i,j);
+      }
+    }else {
+      vis.log(`Index ${j} was larger than the pivot. Continuing partition...`)
+      vis.highlight(j, 'cornflowerblue');
+    }
+    await vis.delay();
+  }
+  vis.log('Done partitioning!')
+  await vis.delay();
+  vis.log('Inserting the pivot between the piles...');
+  if(i+1 !== end) {
+    await vis.swap(i+1, end);
+  }
+  if(i >= 0) {
+    vis.highlight(i, 'cadetblue');
+  }
+  await vis.delay();
+  vis.deHighlight(i+1);
+  return i+1;
+}
