@@ -9,7 +9,7 @@
     display: initial;
 }
 
-.js-bar-cell {
+.js-bar-cell, .js-bar-cell-index {
     float:left;
     list-style: none;
     position: relative;
@@ -17,7 +17,15 @@
     width: 50px;
 }
 
-.js-bar-cell > .js-bar {
+.js-bar-cell-index {
+    height: 1.5em;
+}
+
+.js-bar-cell + .js-bar-cell-index {
+    clear: left;
+}
+
+.js-bar-cell > .js-bar, .js-bar-cell-index > .js-index {
     display:block;
     text-align: center;
     position: absolute;
@@ -26,6 +34,10 @@
     background-color: blue;
     color:white;
     vertical-align: baseline;
+}
+
+.js-index > .js-bar-text {
+    opacity: .5;
 }
 
 .js-bar-text {
