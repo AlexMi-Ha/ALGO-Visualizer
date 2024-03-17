@@ -240,16 +240,27 @@
   }
 
 
+.arr-cell.no-border {
+    border-color: transparent;
+}
+
+.matrix-container, .matrix-content {
+    position: relative;
+}
+
+.matrix-borders {
+    position: absolute;
+    width: max-content;
+    z-index: 9999;
+}
+
+
 .metadata-container {
     border: 1px solid gray;
     display: flex;
     flex-direction: row;
     gap: 1em;
     padding: .5em 1em;
-}
-
-.metadata-element {
-
 }
 
 .metadata-key {
@@ -280,4 +291,5 @@
     max-width: 600px;
     flex-wrap: wrap;
     justify-content: center;
+    gap: 1em;
 }

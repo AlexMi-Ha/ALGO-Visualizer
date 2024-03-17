@@ -325,7 +325,7 @@ async function countingSort() {
 
 async function radixSort() {
   for(let i = vis.rowLength(0) - 1 ; i >= 0 ; --i) {
-    vis.log(`Sorting digit ${i+1} with counting sort...`);
+    vis.log(`Sorting the array based on digit ${i+1}...`);
     vis.highlightColumn(i, 'gold');
     await vis.delay();
     await radix_countingSort(i);
@@ -333,22 +333,20 @@ async function radixSort() {
   }  
   vis.highlightAll('lightgreen');
   vis.log('Finished sorting!');
+  vis.hideMatrix(1);
 }
 
 async function radix_countingSort(column) {
   const counts = new Array(10).fill(0);
+  const logEles = [];
   for(let i = 0; i < vis.columnLength(column); ++i) {
-    vis.highlightRow(i, 'lightgray');
-    vis.highlightCell(i, column, 'lightsteelblue')
     const j = vis.readCell(i, column);
+    logEles.push(j);
     counts[j] += + 1;
-    vis.log(`Counting the digit value '${j}'`);
-    await vis.delay();
-    vis.deHighlightRow(i);
-    vis.highlightCell(i, column, 'gold')
   }
-  vis.log('Sorting the array with counting sort...');
-  
+  vis.log(`CoutingSort([${logEles.join(', ')}])`);
+  vis.showMatrix(1);
+  await vis.delay();
   for(let i = 1; i < 10; ++i) {
     counts[i] += counts[i-1];
   }
@@ -359,18 +357,20 @@ async function radix_countingSort(column) {
     counts[j] -= 1;
     const countVal = counts[j];
     output[countVal] = vis.readRow(i);    
-  }
-  // visualize result
-  await vis.delay();
-  for(let i = 0; i < vis.columnLength(column); ++i) {
-    vis.highlightRow(i, 'lightSalmon');
-    vis.highlightCell(i, column, 'red')
-    vis.writeRow(i, output[i]);
-    vis.log(`Writing number '${output[i]}' in row ${i}!`);
-    await vis.delay();
     vis.deHighlightRow(i);
-    vis.highlightCell(i, column, 'gold')
+    await vis.swapRows(i, countVal, 0,1);
+    await vis.delay();
   }
+
+  const movePromises = [];
+  for(let row = 0; row < vis.columnLength(0,1); ++row) {
+    movePromises.push(vis.swapRows(row, row, 0, 1));
+  }
+  await Promise.all(movePromises);
+  vis.log(`Finished sorting the array based on digit ${column+1}!`);
+  await vis.delay();
+
+  vis.deHighlightAll(1);
 }
 
 
