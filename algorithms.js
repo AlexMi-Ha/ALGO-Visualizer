@@ -6,10 +6,10 @@ async function bubbleSort() {
       for (let i = 1; i < n; ++i) {
           vis.highlight(i, "red");
           vis.highlight(i-1, "red");
-          vis.log(`Compare index ${i} with ${i-1}`)
+          vis.log(`Compare A[${i+1}] with A[${i-1+1}]`)
           await vis.delay();
           if (vis.compare(i-1, i) >= 0) {
-              vis.log(`Index ${i-1} was smaller! Swapping...`)
+              vis.log(`A[${i-1+1}] was smaller! Swapping...`)
               await vis.swap(i - 1, i);
               swapped = true;
           }
@@ -17,7 +17,7 @@ async function bubbleSort() {
           vis.deHighlight(i-1);
       }
       n--;
-      vis.log(`Marking index ${n} as done!`)
+      vis.log(`Marking A[${n}] as done!`)
       vis.highlight(n, 'lightgreen');
       await vis.delay();
   } while (swapped && n > 0);
@@ -26,41 +26,50 @@ async function bubbleSort() {
 }
 
 async function insertionSort() {
+  vis.showMetadata({"Itr": "0", "Key": "-"})
   const len = vis.length() 
   for (let p = 1; p < len; ++p) {
     const _key = vis.getValueAt(p);
     vis.highlight(p, "red");
     vis.log(`Setting the key to ${_key}`)
+    vis.updateMetadata('Key', _key);
+    vis.updateMetadata('Itr', p);
     await vis.delay();
     let i = p - 1;
+    vis.highlightIndex(i);
 
     while (i >= 0 && vis.getValueAt(i) > _key) {
       vis.highlight(i+1, "orange");
       vis.highlight(i, "yellow");
-      vis.log(`Index ${i} is greater than the key!`);
+      vis.log(`A[${i+1}] is greater than the key!`);
       await vis.delay();
       vis.log('Propagating forward...');
       await vis.copyValueFromTo(i, i+1);
       vis.deHighlight(i);
       vis.deHighlight(i+1);
       i--;
+      if(i >= 0)
+        vis.highlightIndex(i);
     }
     if(i >= 0) {
       vis.highlight(i, "orange");
-      vis.log(`Index ${i} is not greater than the key!`);
+      vis.log(`A[${i+1}] is not greater than the key!`);
     }else {
-      vis.log('Reached index 0. No comparison left!')
+      vis.deHighlightAllIndexes();
+      vis.log('Reached index 1. No comparison left!')
     }
     await vis.delay();
     if(i >= 0)
       vis.deHighlight(i);
     vis.deHighlight(p);
-    vis.log(`Inserting the key at index ${i+1}...`);
+    vis.log(`Inserting the key at A[${i+1+1}]...`);
     await vis.setValueAt(i + 1,_key);
     await vis.delay();
+    vis.deHighlightAllIndexes();
   }
   vis.log("Finished sorting!")
   vis.highlightAll('lightgreen');
+  vis.removeMetadata();
 }
 
 async function heapSort() {
@@ -91,7 +100,7 @@ async function buildMaxHeap() {
 
 async function maxHeapify(i) {
   vis.highlight(i, 'red');
-  vis.log(`Heapifying index ${i}...`);
+  vis.log(`Heapifying A[${i+1}]...`);
   await vis.delay();
   const l = vis.leftChild(i);
   const r = vis.rightChild(i);
@@ -118,7 +127,7 @@ async function maxHeapify(i) {
       vis.highlight(r, "darkgray");
     }
     vis.highlight(largest, "gold");
-    vis.log(`Found largest element at index ${largest}!`);
+    vis.log(`Found largest element at A[${largest+1}]!`);
   }
   await vis.delay();
   if(largest != i) {
@@ -169,7 +178,7 @@ async function _mergeWorker(p,q,r) {
   j = q + 1
   vis.highlight(i, "red");
   vis.highlight(j, "red");
-  vis.log(`Merging sub array from index ${p} to ${q} with sub array from index ${q+1} to ${r}.`);
+  vis.log(`Merging sub array from index ${p+1} to ${q+1} with sub array from index ${q+1+1} to ${r+1}.`);
   await vis.delay();
 
   mergeArrayIndex = 0;
@@ -178,7 +187,7 @@ async function _mergeWorker(p,q,r) {
     if(i > q || j > r) {
       vis.log('Moving the rest to the merge array')
     }else {
-      vis.log(`Comparing index ${i} with index ${j}...`)
+      vis.log(`Comparing A[${i+1}] with A[${j+1}]...`)
       await vis.delay();
     }
     
@@ -187,7 +196,7 @@ async function _mergeWorker(p,q,r) {
       vis.deHighlight(i);
 
       if(!(i > q || j > r)) {
-        vis.log(`Index ${i} was smaller. Moving to merge array...`)
+        vis.log(`A[${i+1}] was smaller. Moving to merge array...`)
       }
       
       await vis.swap(i, mergeArrayIndex, 0, 1);
@@ -203,7 +212,7 @@ async function _mergeWorker(p,q,r) {
       vis.deHighlight(j);
 
       if(!(i > q || j > r)) {
-        vis.log(`Index ${j} was smaller. Moving to merge array...`)
+        vis.log(`A[${j+1}] was smaller. Moving to merge array...`)
       }      
       
       await vis.swap(j, mergeArrayIndex, 0, 1);
@@ -236,7 +245,7 @@ async function countingSort() {
   for(let i = 0; i < vis.length(0); ++i) {
     const j = vis.getValueAt(i) - 1;
     vis.highlight(i,"red");
-    vis.log(`Accessing value from index ${i}.`);
+    vis.log(`Accessing value A[${i+1}].`);
     await vis.delay();
     vis.highlight(j, 'red', 1);
     vis.log(`Incrementing count of number ${j+1} in the array!`);
@@ -270,7 +279,7 @@ async function countingSort() {
     vis.highlight(visValue,"darkred",2);
     vis.log(`Count of number ${j+1} is '${visValue+1}'`);
     await vis.delay();
-    vis.log(`Writing index ${i} to index ${visValue}...`);
+    vis.log(`Writing A[${i+1}] to B[${visValue+1}]...`);
     await Promise.all([
       vis.setValueAt(j, visValue,1),
       vis.moveFromTo(visValue,j,2,1,-1),
@@ -368,18 +377,18 @@ async function _quickSortWorker(start, end) {
 async function _partitionWorker(start, end) {
   const x = vis.getValueAt(end);
   vis.highlight(end, 'red');
-  vis.log(`Partitioning from index ${start} to ${end} with pivot value ${x}!`);
+  vis.log(`Partitioning from index ${start+1} to ${end+1} with pivot value ${x}!`);
   await vis.delay();
   let i = start - 1;
   if(i >= 0)
     vis.highlight(i, 'orange');
   for(let j = start; j < end; ++j) {
-    vis.log(`Comparing index ${j} with the pivot...`)
+    vis.log(`Comparing A[${j+1}] with the pivot...`)
     vis.highlight(j, 'orange');
     await vis.delay();
     if(vis.getValueAt(j) <= x) {
 
-      vis.log(`Index ${j} was smaller than the pivot! Moving it to the 'less than' pile...`)
+      vis.log(`A[${j+1}] was smaller than the pivot! Moving it to the 'less than' pile...`)
       
       if(i >= 0)
         vis.highlight(i, 'cadetblue');
@@ -390,7 +399,7 @@ async function _partitionWorker(start, end) {
         await vis.swap(i,j);
       }
     }else {
-      vis.log(`Index ${j} was larger than the pivot. Continuing partition...`)
+      vis.log(`A[${j+1}] was larger than the pivot. Continuing partition...`)
       vis.highlight(j, 'cornflowerblue');
     }
     await vis.delay();
