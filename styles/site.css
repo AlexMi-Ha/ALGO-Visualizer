@@ -266,11 +266,18 @@
 
 .highlighted-index .js-index::after {
     position: absolute;
-    content: 'i';
+    content: attr(js-index-highlight);
     top: 1.4em;
     color:red;
 }
 
-.js-bar-cell-index {
-    margin-bottom: 1em;
+.graphContainer {
+    margin-bottom: 3em;
+}
+
+.allgraphs-container {
+    display:flex;
+    max-width: 600px;
+    flex-wrap: wrap;
+    justify-content: center;
 }

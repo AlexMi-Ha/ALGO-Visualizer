@@ -150,92 +150,112 @@ async function maxHeapify(i) {
 
 async function mergeSort() {
   vis.showBar(1);
+  vis.showBar(2);
   await _mergeSortWorker(0, vis.length()-1);
   vis.hideBar(1);
-  vis.log('Finished sorting!')
+  vis.hideBar(2);
+  vis.log('Finished sorting!');
+  vis.highlightAll('lightgreen');
 }
 
 async function _mergeSortWorker(i, j) {
   if(i >= j) {
     return;
   }
+  vis.log(`Dividing region from index ${i+1} to ${j+1}`);
+  vis.highlightIndex(i, 'p', false);
+  vis.highlightIndex(j, 'r', false);
+  await vis.delay();
   const mid = Math.floor((i+j)/2);
+  vis.log(`Found the middle at index ${mid+1}`);
+  vis.highlightIndex(mid, 'q', false);
+  await vis.delay();
+  vis.deHighlightAllIndexes();
   await _mergeSortWorker(i, mid);
   await _mergeSortWorker(mid + 1, j);
-
+  
+  
+  vis.highlightIndex(i, 'p', false);
+  vis.highlightIndex(j, 'r', false);
+  vis.highlightIndex(mid, 'q', false);
+  if(i < mid || mid+1 < j) {
+    vis.log('Updated p, q and r');
+    await vis.delay();
+  }
+  vis.log(`Merging subarray with p: ${i+1}, q: ${mid+1} and r: ${j+1}.\nMoving to helper arrays...`);
   await _mergeWorker(i,mid,j);
+  vis.deHighlightAllIndexes();
 }
 
 async function _mergeWorker(p,q,r) {
+  const n1 = q-p+1;
+  const n2 = r-q;
+
+  let movePromises = [];
   for(let i = p; i <= q; ++i) {
-    vis.highlight(i, "cadetblue")
+    vis.highlight(i, "cadetblue");
+    movePromises.push(vis.swap(i, i-p, 0,1));
   } 
   for(let i = q+1; i <= r; ++i) {
     vis.highlight(i, "cornflowerblue")
-  } 
-  
-  i = p
-  j = q + 1
-  vis.highlight(i, "red");
-  vis.highlight(j, "red");
-  vis.log(`Merging sub array from index ${p+1} to ${q+1} with sub array from index ${q+1+1} to ${r+1}.`);
+    movePromises.push(vis.swap(i, i-(q+1), 0,2));
+  }
+  await Promise.all(movePromises);
   await vis.delay();
 
-  mergeArrayIndex = 0;
-  while(i <= q || j <= r) {
+  let i = 0;
+  let j = 0;
+  vis.highlight(i, "red", 1);
+  vis.highlight(j, "red", 2);
 
-    if(i > q || j > r) {
+  let mergeArrayIndex = p;
+  while(mergeArrayIndex <= r) {
+
+    if(i >= n1 || j >= n2) {
       vis.log('Moving the rest to the merge array')
     }else {
-      vis.log(`Comparing A[${i+1}] with A[${j+1}]...`)
+      vis.log(`Comparing L[${i+1}] with R[${j+1}]...`)
       await vis.delay();
     }
     
     
-    if ((i > q ? Math.min() : vis.getValueAt(i)) <= (j > r ? Math.min() : vis.getValueAt(j))) {
-      vis.deHighlight(i);
+    if ((i >= n1 ? Math.min() : vis.getValueAt(i, 1)) <= (j >= n2 ? Math.min() : vis.getValueAt(j, 2))) {
+      vis.deHighlight(i,1);
 
-      if(!(i > q || j > r)) {
-        vis.log(`A[${i+1}] was smaller. Moving to merge array...`)
+      if(!(i >= n1 || j >= n2)) {
+        vis.log(`L[${i+1}] was smaller. Moving to merge array...`)
       }
       
-      await vis.swap(i, mergeArrayIndex, 0, 1);
+      await vis.swap(i, mergeArrayIndex, 1, 0);
       
-      if(!(i > q || j > r)) {
+      if(!(i >= n1 || j >= n2)) {
         await vis.delay();
       }
 
       ++i;
-      if(i < vis.length() && i <= q)
-        vis.highlight(i, "red");
+      if(i < n1)
+        vis.highlight(i, "red", 1);
     }else {
-      vis.deHighlight(j);
+      vis.deHighlight(j, 2);
 
-      if(!(i > q || j > r)) {
-        vis.log(`A[${j+1}] was smaller. Moving to merge array...`)
+      if(!(i >= n1 || j >= n2)) {
+        vis.log(`R[${j+1}] was smaller. Moving to merge array...`)
       }      
       
-      await vis.swap(j, mergeArrayIndex, 0, 1);
+      await vis.swap(j, mergeArrayIndex, 2, 0);
       
-      if(!(i > q || j > r)) {
+      if(!(i >= n1 || j >= n2)) {
         await vis.delay();
       }
       
       ++j;
-      if(j < vis.length() && j <= r)
-        vis.highlight(j, "red");
+      if(j < n2)
+        vis.highlight(j, "red", 2);
     }
     ++mergeArrayIndex;
   }
   vis.log('Done merging the two sub arrays!');
   await vis.delay();
-  vis.log('Moving back to original array...');
-  for(let merge = 0; merge < mergeArrayIndex; ++merge) {
-    await vis.swap(merge, merge+p, 1, 0);
-    if(p == 0 && r >= vis.length() - 1) {
-      vis.highlight(merge+p,"lightgreen", 0);
-    }
-  }
 }
 
 async function countingSort() {
