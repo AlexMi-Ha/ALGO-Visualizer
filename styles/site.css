@@ -193,7 +193,6 @@
     width: 50px;
     height: 50px;
     line-height: 40px;
-    margin-left: 3px;
     text-align: center;
     opacity: .5;
 }
@@ -239,3 +238,39 @@
   #speed-slider {
     display: block;
   }
+
+
+.metadata-container {
+    border: 1px solid gray;
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    padding: .5em 1em;
+}
+
+.metadata-element {
+
+}
+
+.metadata-key {
+    font-weight: bolder;
+}
+
+.metadata-value {
+    margin-left: 5px;
+}
+
+.highlighted-index .js-bar-text {
+    color: red;
+}
+
+.highlighted-index .js-index::after {
+    position: absolute;
+    content: 'i';
+    top: 1.4em;
+    color:red;
+}
+
+.js-bar-cell-index {
+    margin-bottom: 1em;
+}
